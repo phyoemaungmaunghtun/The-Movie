@@ -14,4 +14,7 @@ class DataRepository @Inject constructor(private val remoteRepository: RemoteDat
 
     override suspend fun getPopularMovies(language: String, page: Int) =
         remoteRepository.getPopularMovies(language, page)
+
+    override suspend fun getTopRateMovies(language: String, page: Int) =
+        remoteRepository.getTopRateMovies(language, page)
 }

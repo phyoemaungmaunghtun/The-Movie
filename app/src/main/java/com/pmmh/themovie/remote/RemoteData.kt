@@ -23,4 +23,10 @@ constructor(private val serviceGenerator: ApiServiceGenerator) : RemoteDataSourc
             service.getPopularMovies(language,page)
         })
     }
+
+    override suspend fun getTopRateMovies(language: String, page: Int): Resource<Movie> {
+        return serviceGenerator.handleResponse(serviceGenerator.processCall {
+            service.getTopRateMovies(language,page)
+        })
+    }
 }

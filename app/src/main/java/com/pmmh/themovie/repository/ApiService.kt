@@ -20,4 +20,10 @@ interface ApiService {
         @Query("page") page: Int
     ): Response<Movie>
 
+    @GET("3/movie/top_rated?api_key=$API_KEY")
+    suspend fun getTopRateMovies(
+        @Query("language") language: String,
+        @Query("page") page: Int
+    ): Response<Movie>
+
 }

@@ -34,6 +34,8 @@ class MainActivity : BaseActivity() {
     override fun observeViewModel() {
         observeLiveData(activityViewModel.upcomingMovies, ::handleUpcomingMovieList)
         observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
+        observeLiveData(activityViewModel.topRateMovies, ::handleTopRateMovieList)
+
     }
 
     override fun initViewBinding() {
@@ -48,6 +50,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         activityViewModel.getUpcomingMovies()
         activityViewModel.fetchPopularMovies("", 1)
+        activityViewModel.fetchTopRateMovies("",1);
         // showLayout()
     }
 
@@ -93,6 +96,28 @@ class MainActivity : BaseActivity() {
                 popularMovieAdapter = PopularMovieAdapter(this, it.results)
                 activityBinding.popularMovieRecViewMoviesFragment.apply {
                     adapter = popularMovieAdapter
+                    layoutManager = LinearLayoutManager(
+                        context,
+                        LinearLayoutManager.HORIZONTAL, false
+                    )
+                    setHasFixedSize(false)
+                }
+            }
+            is Resource.DataError -> {
+                loadingDialog.dismiss()
+                movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
+            }
+        }
+    }
+
+    private fun handleTopRateMovieList(movieList: Resource<Movie>) {
+        when (movieList) {
+            is Resource.Loading -> loadingDialog.show()
+            is Resource.Success -> movieList.data?.let {
+                loadingDialog.dismiss()
+                topRatedMovieAdapter = PopularMovieAdapter(this, it.results)
+                activityBinding.topRatedMovieRecViewMoviesFragment.apply {
+                    adapter = topRatedMovieAdapter
                     layoutManager = LinearLayoutManager(
                         context,
                         LinearLayoutManager.HORIZONTAL, false
