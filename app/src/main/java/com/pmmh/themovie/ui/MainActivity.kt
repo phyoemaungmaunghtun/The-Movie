@@ -3,8 +3,10 @@ package com.pmmh.themovie.ui
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.pmmh.themovie.R
 import com.pmmh.themovie.adapter.MovieSliderAdapter
+import com.pmmh.themovie.adapter.PopularMovieAdapter
 import com.pmmh.themovie.base.BaseActivity
 import com.pmmh.themovie.databinding.ActivityMainBinding
 import com.pmmh.themovie.model.Movie
@@ -21,6 +23,8 @@ class MainActivity : BaseActivity() {
     lateinit var image_slider_movie: SliderView
 
     lateinit var movieSliderAdapter: MovieSliderAdapter
+    lateinit var popularMovieAdapter: PopularMovieAdapter
+    lateinit var topRatedMovieAdapter: PopularMovieAdapter
 
     private lateinit var activityBinding: ActivityMainBinding
     private val activityViewModel: MainActivityViewModel by lazy {
@@ -29,6 +33,7 @@ class MainActivity : BaseActivity() {
 
     override fun observeViewModel() {
         observeLiveData(activityViewModel.upcomingMovies, ::handleUpcomingMovieList)
+        observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
     }
 
     override fun initViewBinding() {
@@ -42,6 +47,7 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityViewModel.getUpcomingMovies()
+        activityViewModel.fetchPopularMovies("", 1)
         // showLayout()
     }
 
@@ -71,6 +77,28 @@ class MainActivity : BaseActivity() {
                 image_slider_movie.setIndicatorAnimation(IndicatorAnimationType.WORM)
                 image_slider_movie.setSliderTransformAnimation(SliderAnimations.DEPTHTRANSFORMATION)
                 image_slider_movie.startAutoCycle()
+            }
+            is Resource.DataError -> {
+                loadingDialog.dismiss()
+                movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
+            }
+        }
+    }
+
+    private fun handlePopularMovieList(movieList: Resource<Movie>) {
+        when (movieList) {
+            is Resource.Loading -> loadingDialog.show()
+            is Resource.Success -> movieList.data?.let {
+                loadingDialog.dismiss()
+                popularMovieAdapter = PopularMovieAdapter(this, it.results)
+                activityBinding.popularMovieRecViewMoviesFragment.apply {
+                    adapter = popularMovieAdapter
+                    layoutManager = LinearLayoutManager(
+                        context,
+                        LinearLayoutManager.HORIZONTAL, false
+                    )
+                    setHasFixedSize(false)
+                }
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
