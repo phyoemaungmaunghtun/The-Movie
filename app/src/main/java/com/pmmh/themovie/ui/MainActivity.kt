@@ -1,5 +1,6 @@
 package com.pmmh.themovie.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -52,6 +53,18 @@ class MainActivity : BaseActivity() {
         activityViewModel.fetchPopularMovies("", 1)
         activityViewModel.fetchTopRateMovies("",1);
         // showLayout()
+
+        activityBinding.popularMovieSeeAllMovieFrag.setOnClickListener {
+            val intent = Intent(this, SeeAllMovieActivity::class.java)
+            intent.putExtra("ComeFrom","PopularMovies")
+            startActivity(intent)
+        }
+
+        activityBinding.topRatedMovieSeeAllMovieFrag.setOnClickListener {
+            val intent = Intent(this, SeeAllMovieActivity::class.java)
+            intent.putExtra("ComeFrom","TopRatedMovies")
+            startActivity(intent)
+        }
     }
 
     /*private fun hideLayout() {
