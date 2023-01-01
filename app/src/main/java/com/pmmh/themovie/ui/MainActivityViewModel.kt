@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pmmh.themovie.model.Movie
+import com.pmmh.themovie.model.movieCredit.MovieCredit
+import com.pmmh.themovie.model.movieDetails.MovieDetails
+import com.pmmh.themovie.model.youtubeTrailer.MovieTrailer
 import com.pmmh.themovie.repository.DataRepository
 import com.pmmh.themovie.repository.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +33,18 @@ class MainActivityViewModel @Inject constructor(
     val topRateMovies: LiveData<Resource<Movie>>
         get() = _topRateMovies
 
+    private val _movieDetail = MutableLiveData<Resource<MovieDetails>>()
+    val movieDetail: LiveData<Resource<MovieDetails>>
+        get() = _movieDetail
+
+    private val _movieCredit = MutableLiveData<Resource<MovieCredit>>()
+    val movieCredit: LiveData<Resource<MovieCredit>>
+        get() = _movieCredit
+
+    private val _movieTrailer = MutableLiveData<Resource<MovieTrailer>>()
+    val movieTrailer: LiveData<Resource<MovieTrailer>>
+        get() = _movieTrailer
+
     fun getUpcomingMovies() {
         _upcomingMovies.value = Resource.Loading()
         viewModelScope.launch {
@@ -48,6 +63,27 @@ class MainActivityViewModel @Inject constructor(
         _topRateMovies.value = Resource.Loading()
         viewModelScope.launch {
             _topRateMovies.value = dataRepository.getTopRateMovies(language,page)
+        }
+    }
+
+    fun fetchMovieDetails(movieId: String,language: String) {
+        _movieDetail.value = Resource.Loading()
+        viewModelScope.launch {
+            _movieDetail.value = dataRepository.getMovieDetail(movieId,language)
+        }
+    }
+
+    fun fetchMovieCredit(movieId: String,language: String) {
+        _movieCredit.value = Resource.Loading()
+        viewModelScope.launch {
+            _movieCredit.value = dataRepository.getMovieCredit(movieId,language)
+        }
+    }
+
+    fun fetchMovieTrailer(movieId: String, language: String) {
+        _movieTrailer.value = Resource.Loading()
+        viewModelScope.launch {
+            _movieTrailer.value = dataRepository.getMovieTrailer(movieId,language)
         }
     }
 }

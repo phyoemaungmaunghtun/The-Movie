@@ -1,5 +1,6 @@
 package com.pmmh.themovie.repository
 
+import com.pmmh.themovie.model.youtubeTrailer.MovieTrailer
 import com.pmmh.themovie.remote.RemoteData
 import com.pmmh.themovie.remote.RemoteDataSource
 import javax.inject.Inject
@@ -17,4 +18,15 @@ class DataRepository @Inject constructor(private val remoteRepository: RemoteDat
 
     override suspend fun getTopRateMovies(language: String, page: Int) =
         remoteRepository.getTopRateMovies(language, page)
+
+    override suspend fun getMovieDetail( movieId: String,language: String) =
+        remoteRepository.getMovieDetail(movieId, language)
+
+    override suspend fun getMovieCredit(movieId: String,language: String) =
+        remoteRepository.getMovieCredit(movieId, language)
+
+    override suspend fun getMovieTrailer(
+        language: String,
+        movieId: String
+    )= remoteRepository.getMovieTrailer(movieId, language)
 }

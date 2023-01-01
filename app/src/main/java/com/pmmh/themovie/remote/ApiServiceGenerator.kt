@@ -3,6 +3,9 @@ package com.pmmh.themovie.remote
 import com.pmmh.themovie.R
 import com.pmmh.themovie.TheMovieApplication.Companion.context
 import com.pmmh.themovie.model.Movie
+import com.pmmh.themovie.model.movieCredit.MovieCredit
+import com.pmmh.themovie.model.movieDetails.MovieDetails
+import com.pmmh.themovie.model.youtubeTrailer.MovieTrailer
 import com.pmmh.themovie.repository.Resource
 import com.pmmh.themovie.utilities.Network
 import retrofit2.Response
@@ -19,9 +22,18 @@ constructor(private val retrofit: Retrofit) {
         return retrofit.create(serviceClass)
     }
 
-    fun handleResponse(responseCall: Any?): Resource<Movie> {
+    fun handleResponse(responseCall: Any?): Resource<Any> {
         return when (responseCall) {
             is Movie -> {
+                Resource.Success(data = responseCall)
+            }
+            is MovieDetails -> {
+                Resource.Success(data = responseCall)
+            }
+            is MovieCredit ->{
+                Resource.Success(data = responseCall)
+            }
+            is MovieTrailer ->{
                 Resource.Success(data = responseCall)
             }
             else -> {

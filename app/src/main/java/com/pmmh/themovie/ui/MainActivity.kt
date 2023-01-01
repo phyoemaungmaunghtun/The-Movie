@@ -2,7 +2,9 @@ package com.pmmh.themovie.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pmmh.themovie.R
@@ -51,37 +53,37 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         activityViewModel.getUpcomingMovies()
         activityViewModel.fetchPopularMovies("", 1)
-        activityViewModel.fetchTopRateMovies("",1);
-        // showLayout()
+        activityViewModel.fetchTopRateMovies("", 1);
+        hideLayout()
 
         activityBinding.popularMovieSeeAllMovieFrag.setOnClickListener {
             val intent = Intent(this, SeeAllMovieActivity::class.java)
-            intent.putExtra("ComeFrom","PopularMovies")
+            intent.putExtra("ComeFrom", "PopularMovies")
             startActivity(intent)
         }
 
         activityBinding.topRatedMovieSeeAllMovieFrag.setOnClickListener {
             val intent = Intent(this, SeeAllMovieActivity::class.java)
-            intent.putExtra("ComeFrom","TopRatedMovies")
+            intent.putExtra("ComeFrom", "TopRatedMovies")
             startActivity(intent)
         }
+        showLayout()
     }
 
-    /*private fun hideLayout() {
+    private fun hideLayout() {
 
-        image_slider_movieFragment.visibility = View.GONE
-        popular_MovieLayout_movieFrag.visibility = View.GONE
-        topRated_MovieLayout_movieFrag.visibility = View.GONE
-        spin_kit_movieFrag.visibility = View.VISIBLE
+        image_slider_movie.visibility = View.GONE
+        activityBinding.popularMovieLayoutMovieFrag.visibility = View.GONE
+        activityBinding.topRatedMovieLayoutMovieFrag.visibility = View.GONE
+        activityBinding.spinKitMovieFrag.visibility = View.VISIBLE
     }
 
-    private fun showLayout(){
-
-        spin_kit_movieFrag.visibility = View.GONE
+    private fun showLayout() {
+        activityBinding.spinKitMovieFrag.visibility = View.GONE
         image_slider_movie.visibility = View.VISIBLE
-        popular_MovieLayout_movieFrag.visibility = View.VISIBLE
-        topRated_MovieLayout_movieFrag.visibility = View.VISIBLE
-    }*/
+        activityBinding.popularMovieLayoutMovieFrag.visibility = View.VISIBLE
+        activityBinding.topRatedMovieLayoutMovieFrag.visibility = View.VISIBLE
+    }
 
     private fun handleUpcomingMovieList(movieList: Resource<Movie>) {
         when (movieList) {
@@ -93,6 +95,13 @@ class MainActivity : BaseActivity() {
                 image_slider_movie.setIndicatorAnimation(IndicatorAnimationType.WORM)
                 image_slider_movie.setSliderTransformAnimation(SliderAnimations.DEPTHTRANSFORMATION)
                 image_slider_movie.startAutoCycle()
+                movieSliderAdapter.onItemClick = { movieId ->
+                    val bundle = Bundle()
+                    bundle.putString("MovieIdPass", movieId)
+                    val fragment = DetailFragment()
+                    fragment.arguments = bundle
+                    transactionFragment(fragment)
+                }
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
@@ -114,6 +123,13 @@ class MainActivity : BaseActivity() {
                         LinearLayoutManager.HORIZONTAL, false
                     )
                     setHasFixedSize(false)
+                }
+                popularMovieAdapter.onItemClick = { movieId ->
+                    val bundle = Bundle()
+                    bundle.putString("MovieIdPass", movieId)
+                    val fragment = DetailFragment()
+                    fragment.arguments = bundle
+                    transactionFragment(fragment)
                 }
             }
             is Resource.DataError -> {
@@ -137,11 +153,26 @@ class MainActivity : BaseActivity() {
                     )
                     setHasFixedSize(false)
                 }
+                topRatedMovieAdapter.onItemClick = { movieId ->
+                    val bundle = Bundle()
+                    bundle.putString("MovieIdPass", movieId)
+                    val fragment = DetailFragment()
+                    fragment.arguments = bundle
+                    transactionFragment(fragment)
+                }
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
                 movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
             }
         }
+    }
+
+    private fun transactionFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .add(
+                R.id.frame_layout,
+                fragment
+            ).addToBackStack(null).commit()
     }
 }

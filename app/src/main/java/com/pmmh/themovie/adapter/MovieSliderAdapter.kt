@@ -1,7 +1,6 @@
 package com.pmmh.themovie.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,15 +9,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.pmmh.themovie.R
+import com.pmmh.themovie.model.Result
 import com.pmmh.themovie.utilities.Constants
 import com.pmmh.themovie.utilities.Helper
 import com.pmmh.themovie.utilities.Utils
 import com.smarteist.autoimageslider.SliderViewAdapter
-import com.pmmh.themovie.model.Result
 
-class MovieSliderAdapter(val ctx : Context, val movies : List<Result>):
+class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
     SliderViewAdapter<MovieSliderAdapter.MyViewHolder>() {
-
+    var onItemClick: ((String) -> Unit)? = null
 
     override fun getCount(): Int {
         return 5
@@ -38,34 +37,14 @@ class MovieSliderAdapter(val ctx : Context, val movies : List<Result>):
             .load(Utils.posterUrlMake(movie.posterPath))
             .into(viewHolder!!.poster)
 
-//        Glide.with(ctx)
-//            .load(Util.posterUrlMake(movie.posterPath))
-//            .placeholder(R.drawable.poster_bg)
-//            .into(object : CustomTarget<Drawable>(1080, 1080) {
-//                override fun onResourceReady(
-//                    resource: Drawable,
-//                    transition: Transition<in Drawable>?
-//                ) {
-//                    viewHolder!!.poster.setImageDrawable(resource)
-//                }
-//
-//                override fun onLoadCleared(placeholder: Drawable?) {
-//
-//                }
-//
-//            })
-
-
-
-        if(Helper.CompareDate(movie.releaseDate) == 1){
+        if (Helper.CompareDate(movie.releaseDate) == 1) {
             viewHolder!!.titleBig.text = "New Movies"
-        }else if(Helper.CompareDate(movie.releaseDate) == 2){
+        } else if (Helper.CompareDate(movie.releaseDate) == 2) {
             viewHolder!!.titleBig.text = "Upcoming Movies"
         }
-        if(movie.adult){
+        if (movie.adult) {
             viewHolder.adultCheck.text = "18+"
-        }
-        else{
+        } else {
             viewHolder.adultCheck.text = "13+"
         }
 
@@ -74,23 +53,16 @@ class MovieSliderAdapter(val ctx : Context, val movies : List<Result>):
         viewHolder.genre1.text = Constants.getGenre(movie.genreIds[0])
 
 
-        if(movie.genreIds.size > 1){
+        if (movie.genreIds.size > 1) {
             viewHolder.genre2.text = Constants.getGenre(movie.genreIds[1])
             viewHolder.genre2Layout.visibility = View.VISIBLE
-        }else{
+        } else {
             viewHolder.genre2Layout.visibility = View.INVISIBLE
         }
-
-
-
-       /* viewHolder.itemView.setOnClickListener {
-            val intent = Intent(ctx, MovieDetailsActivity::class.java)
-            val movieId:String = movie.id.toString()
-            intent.putExtra("MovieIdPass",movieId)
-            ctx.startActivity(intent)
-        }*/
-
-
+        viewHolder.itemView.setOnClickListener {
+            val movieId: String = movie.id.toString()
+            onItemClick?.invoke(movieId)
+        }
     }
 
 
