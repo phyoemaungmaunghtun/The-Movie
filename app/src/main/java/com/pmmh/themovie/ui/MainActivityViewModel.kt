@@ -45,6 +45,10 @@ class MainActivityViewModel @Inject constructor(
     val movieTrailer: LiveData<Resource<MovieTrailer>>
         get() = _movieTrailer
 
+    private val _searchMovie = MutableLiveData<Resource<Movie>>()
+    val searchMovie: LiveData<Resource<Movie>>
+        get() = _searchMovie
+
     fun getUpcomingMovies() {
         _upcomingMovies.value = Resource.Loading()
         viewModelScope.launch {
@@ -84,6 +88,13 @@ class MainActivityViewModel @Inject constructor(
         _movieTrailer.value = Resource.Loading()
         viewModelScope.launch {
             _movieTrailer.value = dataRepository.getMovieTrailer(movieId,language)
+        }
+    }
+
+    fun searchMovie(query: String) {
+        _searchMovie.postValue(Resource.Loading())
+        viewModelScope.launch {
+            _searchMovie.postValue(dataRepository.searchMovie(query))
         }
     }
 }

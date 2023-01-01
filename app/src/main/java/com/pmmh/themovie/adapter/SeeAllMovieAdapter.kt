@@ -10,12 +10,15 @@ import com.bumptech.glide.Glide
 import com.pmmh.themovie.R
 import com.pmmh.themovie.model.Result
 import com.pmmh.themovie.utilities.Utils
-
+import android.widget.Filter
+import android.widget.Filterable
 
 class SeeAllMovieAdapter(val ctx: Context) :
-    RecyclerView.Adapter<SeeAllMovieAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<SeeAllMovieAdapter.MyViewHolder>() , Filterable{
 
     var movies: ArrayList<Result> = arrayListOf()
+    var searchMovieList: ArrayList<Result> = arrayListOf()
+    var onItemClick: ((String) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View = LayoutInflater.from(ctx)
@@ -31,16 +34,15 @@ class SeeAllMovieAdapter(val ctx: Context) :
             .load(Utils.posterUrlMake(movie.posterPath))
             .into(viewHolder.poster)
 
-        /*viewHolder.itemView.setOnClickListener {
-            val intent = Intent(ctx,MovieDetailsActivity::class.java)
-            val movieId:String = movie.id.toString()
-            intent.putExtra("MovieIdPass",movieId)
-            ctx.startActivity(intent)
-        }*/
+        viewHolder.itemView.setOnClickListener {
+            val movieId: String = movie.id.toString()
+            onItemClick?.invoke(movieId)
+        }
 
     }
 
     fun addMovie(movie: List<Result>) {
+        searchMovieList.addAll(movie)
         movies.addAll(movie)
         notifyDataSetChanged()
     }
@@ -49,6 +51,32 @@ class SeeAllMovieAdapter(val ctx: Context) :
         return movies.size
     }
 
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    movies = searchMovieList as ArrayList<Result>
+                } else {
+                    val resultList = ArrayList<Result>()
+                    for (row in searchMovieList) {
+                        if (row.title.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                            resultList.add(row)
+                        }
+                    }
+                    movies = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = movies
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                movies = results?.values as ArrayList<Result>
+                notifyDataSetChanged()
+            }
+        }
+    }
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val poster = itemView.findViewById<ImageView>(R.id.imageView_single_movie_seeAll)

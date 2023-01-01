@@ -1,8 +1,15 @@
 package com.pmmh.themovie.ui
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.pmmh.themovie.R
@@ -13,6 +20,8 @@ import com.pmmh.themovie.model.Movie
 import com.pmmh.themovie.repository.Resource
 import com.pmmh.themovie.utilities.observeLiveData
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class SeeAllMovieActivity : BaseActivity() {
@@ -29,6 +38,7 @@ class SeeAllMovieActivity : BaseActivity() {
     override fun observeViewModel() {
         observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
         observeLiveData(activityViewModel.topRateMovies, ::handleTopRateMovieList)
+        //observeLiveData(activityViewModel.searchMovie,::handleSearchMovieList)
     }
 
     override fun initViewBinding() {
@@ -79,6 +89,7 @@ class SeeAllMovieActivity : BaseActivity() {
             is Resource.Success -> movieList.data?.let {
                 loadingDialog.dismiss()
                 seeAllMovieAdapter.addMovie(it.results)
+                navigateDetail()
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
@@ -93,12 +104,55 @@ class SeeAllMovieActivity : BaseActivity() {
             is Resource.Success -> movieList.data?.let {
                 loadingDialog.dismiss()
                 seeAllMovieAdapter.addMovie(it.results)
+                navigateDetail()
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
                 movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
             }
         }
+    }
+
+   /* private fun handleSearchMovieList(movieList: Resource<Movie>) {
+        when (movieList) {
+            is Resource.Loading -> loadingDialog.show()
+            is Resource.Success -> movieList.data?.let {
+                loadingDialog.dismiss()
+                //seeAllMovieAdapter.addMovie(it.results)
+            }
+            is Resource.DataError -> {
+                loadingDialog.dismiss()
+                movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
+            }
+        }
+    }*/
+
+    private fun navigateDetail(){
+        seeAllMovieAdapter.onItemClick = { movieId ->
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra("MovieIdPass", movieId)
+            startActivity(intent)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu,menu)
+        val menuItem = menu?.findItem(R.id.action_search)
+        val searchView = menuItem?.actionView as SearchView
+        searchView.queryHint = "Type here to search"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextChange(query: String): Boolean {
+                seeAllMovieAdapter?.filter?.filter(query)
+                return true
+            }
+
+            override fun onQueryTextSubmit(newText: String): Boolean {
+                return false
+            }
+
+        })
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -109,4 +163,5 @@ class SeeAllMovieActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
 }

@@ -10,7 +10,6 @@
         android:fitsSystemWindows="true"
         tools:context=".ui.SeeAllMovieActivity">
 
-
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -20,6 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/backGround"
+                android:theme="@style/App.ToolbarStyle"
                 app:title="Popular Movies"
                 app:titleTextAppearance="@style/titleAppBar"
                 app:titleTextColor="@color/white" />

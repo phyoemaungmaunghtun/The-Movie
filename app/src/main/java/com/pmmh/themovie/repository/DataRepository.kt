@@ -29,4 +29,8 @@ class DataRepository @Inject constructor(private val remoteRepository: RemoteDat
         language: String,
         movieId: String
     )= remoteRepository.getMovieTrailer(movieId, language)
+
+    override suspend fun searchMovie(
+        query: String
+    )= remoteRepository.searchMovie(query)
 }

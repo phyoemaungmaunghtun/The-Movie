@@ -13,7 +13,7 @@ internal interface RemoteDataSource {
     suspend fun getTopRateMovies(language: String, page: Int): Resource<Movie>
     suspend fun getMovieDetail(language: String, movieId: String): Resource<MovieDetails>
     suspend fun getMovieCredit(language: String, movieId: String): Resource<MovieCredit>
-
     suspend fun getMovieTrailer(language: String, movieId: String): Resource<MovieTrailer>
+    suspend fun searchMovie(query: String): Resource<Movie>
 
 }
