@@ -5,7 +5,7 @@ import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class TheMovieApplication: Application() {
+class TheMovieApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext

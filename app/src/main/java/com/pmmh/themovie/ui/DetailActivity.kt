@@ -19,7 +19,6 @@ class DetailActivity : BaseActivity() {
             this, R.layout.activity_detail
         )
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val movieId = intent.getStringExtra("MovieIdPass").toString()

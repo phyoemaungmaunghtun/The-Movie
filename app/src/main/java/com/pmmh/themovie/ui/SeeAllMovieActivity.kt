@@ -1,15 +1,11 @@
 package com.pmmh.themovie.ui
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.pmmh.themovie.R
@@ -20,8 +16,6 @@ import com.pmmh.themovie.model.Movie
 import com.pmmh.themovie.repository.Resource
 import com.pmmh.themovie.utilities.observeLiveData
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import kotlin.concurrent.schedule
 
 @AndroidEntryPoint
 class SeeAllMovieActivity : BaseActivity() {
@@ -33,7 +27,6 @@ class SeeAllMovieActivity : BaseActivity() {
     private lateinit var layoutManagerGrid: GridLayoutManager
     private lateinit var seeAllMovieAdapter: SeeAllMovieAdapter
     var page = 1
-
 
     override fun observeViewModel() {
         observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
@@ -112,21 +105,7 @@ class SeeAllMovieActivity : BaseActivity() {
         }
     }
 
-   /* private fun handleSearchMovieList(movieList: Resource<Movie>) {
-        when (movieList) {
-            is Resource.Loading -> loadingDialog.show()
-            is Resource.Success -> movieList.data?.let {
-                loadingDialog.dismiss()
-                //seeAllMovieAdapter.addMovie(it.results)
-            }
-            is Resource.DataError -> {
-                loadingDialog.dismiss()
-                movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
-            }
-        }
-    }*/
-
-    private fun navigateDetail(){
+    private fun navigateDetail() {
         seeAllMovieAdapter.onItemClick = { movieId ->
             val intent = Intent(this, DetailActivity::class.java)
             intent.putExtra("MovieIdPass", movieId)
@@ -135,7 +114,7 @@ class SeeAllMovieActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu,menu)
+        menuInflater.inflate(R.menu.menu, menu)
         val menuItem = menu?.findItem(R.id.action_search)
         val searchView = menuItem?.actionView as SearchView
         searchView.queryHint = "Type here to search"

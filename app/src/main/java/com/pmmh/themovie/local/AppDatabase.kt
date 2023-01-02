@@ -8,7 +8,8 @@ import androidx.room.TypeConverters
 import com.pmmh.themovie.local.dao.MovieDao
 import com.pmmh.themovie.local.entities.LocalMovies
 
-@Database(entities = [LocalMovies::class], version = 1)@TypeConverters(IntTypeConverter::class)
+@Database(entities = [LocalMovies::class], version = 1)
+@TypeConverters(IntTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun movieDao(): MovieDao
 

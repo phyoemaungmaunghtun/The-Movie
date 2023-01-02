@@ -11,7 +11,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(ActivityComponent::class)
 object ActivityContextProvider {
-
     @Singleton
     @Provides
     fun providerBaseActivity(activity: Activity): BaseActivity {

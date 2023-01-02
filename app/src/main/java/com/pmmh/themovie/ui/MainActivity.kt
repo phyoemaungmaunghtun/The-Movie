@@ -2,7 +2,6 @@ package com.pmmh.themovie.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -108,14 +107,6 @@ class MainActivity : BaseActivity() {
                 ).show()
             }
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
     }
 
     private fun handleUpcomingMovieList(movieList: Resource<Movie>) {

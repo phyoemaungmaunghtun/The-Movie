@@ -1,9 +1,9 @@
 package com.pmmh.themovie.utilities
 
 class Constants {
-    companion object{
+    companion object {
         fun getGenre(id: Int): String {
-            val genreMap = HashMap<Int,String>()
+            val genreMap = HashMap<Int, String>()
             genreMap.put(28, "Action")
             genreMap.put(12, "Adventure")
             genreMap.put(16, "Animation")

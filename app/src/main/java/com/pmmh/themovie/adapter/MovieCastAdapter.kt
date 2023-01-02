@@ -14,8 +14,6 @@ import com.pmmh.themovie.utilities.Utils
 
 class MovieCastAdapter(val ctx: Context, val people: List<Cast>) :
     RecyclerView.Adapter<MovieCastAdapter.MyViewHolder>() {
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View = LayoutInflater.from(ctx)
             .inflate(R.layout.cast_or_crew_single, parent, false)
@@ -30,16 +28,13 @@ class MovieCastAdapter(val ctx: Context, val people: List<Cast>) :
             .load(Utils.posterUrlMake(cast.profilePath))
             .into(viewHolder.profile_cast_single)
 
-
         viewHolder.title_cast_single.text = cast.originalName
         viewHolder.title2_cast_single.text = cast.character
-
     }
 
     override fun getItemCount(): Int {
         return people.size
     }
-
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profile_cast_single = itemView.findViewById<ImageView>(R.id.profile_cast_single)

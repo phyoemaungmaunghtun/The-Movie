@@ -5,22 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pmmh.themovie.R
 import com.pmmh.themovie.model.Result
 import com.pmmh.themovie.utilities.Utils
-import android.widget.Filter
-import android.widget.Filterable
 
 class SeeAllMovieAdapter(val ctx: Context) :
-    RecyclerView.Adapter<SeeAllMovieAdapter.MyViewHolder>() , Filterable{
+    RecyclerView.Adapter<SeeAllMovieAdapter.MyViewHolder>(), Filterable {
 
     var movies: ArrayList<Result> = arrayListOf()
     var searchMovieList: ArrayList<Result> = arrayListOf()
     var onItemClick: ((String) -> Unit)? = null
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view: View = LayoutInflater.from(ctx)
             .inflate(R.layout.single_movie_see_all, parent, false)
@@ -43,8 +42,8 @@ class SeeAllMovieAdapter(val ctx: Context) :
     }
 
     fun addMovie(movie: List<Result>) {
-        if(searchMovieList.size > 0){
-            Log.d("##MovieItem","${movie.size}")
+        if (searchMovieList.size > 0) {
+            Log.d("##MovieItem", "${movie.size}")
             return
         }
         searchMovieList.addAll(movie)
@@ -65,7 +64,9 @@ class SeeAllMovieAdapter(val ctx: Context) :
                 } else {
                     val resultList = ArrayList<Result>()
                     for (row in searchMovieList) {
-                        if (row.title!!.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (row.title!!.toLowerCase()
+                                .contains(constraint.toString().toLowerCase())
+                        ) {
                             resultList.add(row)
                         }
                     }

@@ -30,10 +30,10 @@ constructor(private val retrofit: Retrofit) {
             is MovieDetails -> {
                 Resource.Success(data = responseCall)
             }
-            is MovieCredit ->{
+            is MovieCredit -> {
                 Resource.Success(data = responseCall)
             }
-            is MovieTrailer ->{
+            is MovieTrailer -> {
                 Resource.Success(data = responseCall)
             }
             else -> {

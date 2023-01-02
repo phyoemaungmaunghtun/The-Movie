@@ -1,7 +1,6 @@
 package com.pmmh.themovie.local
 
 import com.pmmh.themovie.local.entities.LocalMovies
-import com.pmmh.themovie.model.Result
 
 interface LocalDataSource {
     suspend fun insertMovies(Movies: List<LocalMovies>)

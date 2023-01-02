@@ -2,7 +2,6 @@ package com.pmmh.themovie.local
 
 import com.pmmh.themovie.TheMovieApplication.Companion.context
 import com.pmmh.themovie.local.entities.LocalMovies
-import com.pmmh.themovie.model.Result
 import javax.inject.Inject
 
 class LocalData @Inject constructor() : LocalDataSource {

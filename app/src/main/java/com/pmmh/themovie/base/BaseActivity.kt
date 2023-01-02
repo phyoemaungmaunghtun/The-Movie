@@ -10,13 +10,10 @@ abstract class BaseActivity: AppCompatActivity() {
 
     @Inject
     lateinit var loadingDialog: LoadingDialog
-
     @Inject
     lateinit var responseDialog: ResponseDialogUtil
-
     abstract fun observeViewModel()
     protected abstract fun initViewBinding()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewBinding()

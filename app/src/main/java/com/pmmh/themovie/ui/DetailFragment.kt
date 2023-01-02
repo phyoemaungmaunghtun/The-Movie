@@ -31,6 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DetailFragment : BaseFragment() {
     private lateinit var fragmentBinding: FragmentMovieDetailsBinding
+
     //lateinit var activityViewModel: MainActivityViewModel
     private val activityViewModel: MainActivityViewModel by lazy {
         ViewModelProvider(this)[MainActivityViewModel::class.java]

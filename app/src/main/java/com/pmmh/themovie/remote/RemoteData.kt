@@ -1,7 +1,6 @@
 package com.pmmh.themovie.remote
 
 import com.pmmh.themovie.model.Movie
-import com.pmmh.themovie.model.UserListResponseModel
 import com.pmmh.themovie.model.movieCredit.MovieCredit
 import com.pmmh.themovie.model.movieDetails.MovieDetails
 import com.pmmh.themovie.model.youtubeTrailer.MovieTrailer
@@ -13,7 +12,6 @@ class RemoteData @Inject
 constructor(private val serviceGenerator: ApiServiceGenerator) : RemoteDataSource {
 
     private val service = serviceGenerator.createService(ApiService::class.java)
-
     override suspend fun getUpcomingMovies(language:String,page:Int
     ): Resource<Movie> {
         return serviceGenerator.handleResponse(serviceGenerator.processCall {

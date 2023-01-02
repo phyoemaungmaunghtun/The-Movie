@@ -18,7 +18,6 @@ import com.smarteist.autoimageslider.SliderViewAdapter
 class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
     SliderViewAdapter<MovieSliderAdapter.MyViewHolder>() {
     var onItemClick: ((String) -> Unit)? = null
-
     override fun getCount(): Int {
         return 5
     }
@@ -37,7 +36,6 @@ class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
             .load(Utils.posterUrlMake(movie.posterPath))
             .into(viewHolder!!.poster)
             .onLoadFailed(ctx.getDrawable(R.drawable.thumbnail))
-
 
         if (Helper.CompareDate(movie.releaseDate!!) == 1) {
             viewHolder!!.titleBig.text = "New Movies"
@@ -66,7 +64,6 @@ class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
             onItemClick?.invoke(movieId)
         }
     }
-
 
     class MyViewHolder(itemView: View) : SliderViewAdapter.ViewHolder(itemView) {
         val poster = itemView.findViewById<ImageView>(R.id.imageView_single_movie_slider)
