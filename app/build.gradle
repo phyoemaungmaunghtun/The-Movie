@@ -12,12 +12,13 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 android {
 
     signingConfigs {
-        config {
+        //please uncomment and add jks key in keystore.properties to run release build
+        /*config {
             keyAlias = keystoreProperties["keyAlias"]
             keyPassword = keystoreProperties["keyPassword"]
             storeFile = file(keystoreProperties["storeFile"])
             storePassword = keystoreProperties["storePassword"]
-        }
+        }*/
     }
     namespace 'com.pmmh.themovie'
     compileSdk 33
@@ -37,7 +38,7 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            //signingConfig signingConfigs.config
         }
     }
     buildFeatures {
