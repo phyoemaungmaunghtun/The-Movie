@@ -1,6 +1,5 @@
 package com.pmmh.themovie.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,10 +44,6 @@ class MainActivityViewModel @Inject constructor(
     private val _movieTrailer = MutableLiveData<Resource<MovieTrailer>>()
     val movieTrailer: LiveData<Resource<MovieTrailer>>
         get() = _movieTrailer
-
-    private val _searchMovie = MutableLiveData<Resource<Movie>>()
-    val searchMovie: LiveData<Resource<Movie>>
-        get() = _searchMovie
 
     private val _localUpComingMovies = MutableLiveData<List<Result>>()
     val localUpComingMovies: LiveData<List<Result>>
@@ -104,26 +99,16 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun searchMovie(query: String) {
-        _searchMovie.postValue(Resource.Loading())
-        viewModelScope.launch {
-            _searchMovie.postValue(dataRepository.searchMovie(query))
-        }
-    }
-
     fun cacheMovies(type: Int, results: List<Result>) {
         viewModelScope.launch {
-            Log.d("##LocalCache", "Hello")
             val list = localRepository.getMovies(type)
-            Log.d("##NotEmptySize", "${list.size}")
             if (list.isNotEmpty()) {
-                Log.d("##NotEmpty", list[0].title!!)
                 localRepository.deleteMovies(type)
             }
-            when(type){
-                1 ->results.forEach { movie -> movie.movieType = 1 }
-                2 ->results.forEach { movie -> movie.movieType = 2 }
-                3 ->results.forEach { movie -> movie.movieType = 3 }
+            when (type) {
+                1 -> results.forEach { movie -> movie.movieType = 1 }
+                2 -> results.forEach { movie -> movie.movieType = 2 }
+                3 -> results.forEach { movie -> movie.movieType = 3 }
             }
             localRepository.insertMovies(convertOnlineToLocal(results))
         }

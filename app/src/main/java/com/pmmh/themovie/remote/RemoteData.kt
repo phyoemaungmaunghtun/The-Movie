@@ -53,11 +53,4 @@ constructor(private val serviceGenerator: ApiServiceGenerator) : RemoteDataSourc
         }) as Resource<MovieTrailer>
     }
 
-    override suspend fun searchMovie(
-        query: String
-    ): Resource<Movie> {
-        return serviceGenerator.handleResponse(serviceGenerator.processCall {
-            service.searchMovies(query)
-        }) as Resource<Movie>
-    }
 }

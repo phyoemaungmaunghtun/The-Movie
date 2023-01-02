@@ -2,6 +2,7 @@ package com.pmmh.themovie.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -21,9 +22,13 @@ import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnima
 import com.smarteist.autoimageslider.SliderAnimations
 import com.smarteist.autoimageslider.SliderView
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
+
+    @Inject
+    lateinit var networkConnection: NetworkConnection
 
     lateinit var image_slider_movie: SliderView
     lateinit var movieSliderAdapter: MovieSliderAdapter
@@ -58,7 +63,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val networkConnection = NetworkConnection(applicationContext)
         networkConnection.observe(this) { isConnected ->
             networkState = isConnected
             if (isConnected) {

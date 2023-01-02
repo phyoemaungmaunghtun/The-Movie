@@ -1,6 +1,7 @@
 package com.pmmh.themovie.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +43,10 @@ class SeeAllMovieAdapter(val ctx: Context) :
     }
 
     fun addMovie(movie: List<Result>) {
+        if(searchMovieList.size > 0){
+            Log.d("##MovieItem","${movie.size}")
+            return
+        }
         searchMovieList.addAll(movie)
         movies.addAll(movie)
         notifyDataSetChanged()

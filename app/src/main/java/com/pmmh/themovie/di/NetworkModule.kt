@@ -24,7 +24,6 @@ object NetworkModule {
     private const val timeoutRead = 300   //In seconds
     private const val BASE_URL = "https://api.themoviedb.org/"
 
-
     @Singleton
     @Provides
     fun provideOkHttpClient(

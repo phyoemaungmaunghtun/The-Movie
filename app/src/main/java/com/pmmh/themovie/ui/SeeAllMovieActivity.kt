@@ -38,7 +38,6 @@ class SeeAllMovieActivity : BaseActivity() {
     override fun observeViewModel() {
         observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
         observeLiveData(activityViewModel.topRateMovies, ::handleTopRateMovieList)
-        //observeLiveData(activityViewModel.searchMovie,::handleSearchMovieList)
     }
 
     override fun initViewBinding() {

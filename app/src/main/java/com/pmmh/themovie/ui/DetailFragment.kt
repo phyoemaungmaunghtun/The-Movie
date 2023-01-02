@@ -31,7 +31,11 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DetailFragment : BaseFragment() {
     private lateinit var fragmentBinding: FragmentMovieDetailsBinding
-    lateinit var activityViewModel: MainActivityViewModel
+    //lateinit var activityViewModel: MainActivityViewModel
+    private val activityViewModel: MainActivityViewModel by lazy {
+        ViewModelProvider(this)[MainActivityViewModel::class.java]
+    }
+
     private var movieId: String = ""
 
     lateinit var title_single_movie_Details: TextView
@@ -115,7 +119,7 @@ class DetailFragment : BaseFragment() {
     }
 
     override fun observeViewModel() {
-        activityViewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
+        //activityViewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
         observeLiveData(activityViewModel.movieDetail, ::handleMovieDetail)
         observeLiveData(activityViewModel.movieCredit, ::handleMovieCredit)
     }
