@@ -60,7 +60,7 @@ class SeeAllMovieAdapter(val ctx: Context) :
                 } else {
                     val resultList = ArrayList<Result>()
                     for (row in searchMovieList) {
-                        if (row.title.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (row.title!!.toLowerCase().contains(constraint.toString().toLowerCase())) {
                             resultList.add(row)
                         }
                     }

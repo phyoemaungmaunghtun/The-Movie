@@ -36,13 +36,15 @@ class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
             .with(ctx)
             .load(Utils.posterUrlMake(movie.posterPath))
             .into(viewHolder!!.poster)
+            .onLoadFailed(ctx.getDrawable(R.drawable.thumbnail))
 
-        if (Helper.CompareDate(movie.releaseDate) == 1) {
+
+        if (Helper.CompareDate(movie.releaseDate!!) == 1) {
             viewHolder!!.titleBig.text = "New Movies"
         } else if (Helper.CompareDate(movie.releaseDate) == 2) {
             viewHolder!!.titleBig.text = "Upcoming Movies"
         }
-        if (movie.adult) {
+        if (movie.adult!!) {
             viewHolder.adultCheck.text = "18+"
         } else {
             viewHolder.adultCheck.text = "13+"
@@ -50,7 +52,7 @@ class MovieSliderAdapter(val ctx: Context, val movies: List<Result>) :
 
         viewHolder!!.movieTitle.text = movie.title
         viewHolder.releaseDate.text = movie.releaseDate
-        viewHolder.genre1.text = Constants.getGenre(movie.genreIds[0])
+        viewHolder.genre1.text = Constants.getGenre(movie.genreIds?.get(0)!!)
 
 
         if (movie.genreIds.size > 1) {

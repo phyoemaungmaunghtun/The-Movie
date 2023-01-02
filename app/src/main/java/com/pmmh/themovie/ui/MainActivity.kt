@@ -2,7 +2,7 @@ package com.pmmh.themovie.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +13,9 @@ import com.pmmh.themovie.adapter.PopularMovieAdapter
 import com.pmmh.themovie.base.BaseActivity
 import com.pmmh.themovie.databinding.ActivityMainBinding
 import com.pmmh.themovie.model.Movie
+import com.pmmh.themovie.model.Result
 import com.pmmh.themovie.repository.Resource
+import com.pmmh.themovie.utilities.NetworkConnection
 import com.pmmh.themovie.utilities.observeLiveData
 import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType
 import com.smarteist.autoimageslider.SliderAnimations
@@ -24,10 +26,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     lateinit var image_slider_movie: SliderView
-
     lateinit var movieSliderAdapter: MovieSliderAdapter
     lateinit var popularMovieAdapter: PopularMovieAdapter
     lateinit var topRatedMovieAdapter: PopularMovieAdapter
+    private val upComingType = 1
+    private val popularType = 2
+    private val topRateType = 3
+    private var networkState = true
 
     private lateinit var activityBinding: ActivityMainBinding
     private val activityViewModel: MainActivityViewModel by lazy {
@@ -38,7 +43,9 @@ class MainActivity : BaseActivity() {
         observeLiveData(activityViewModel.upcomingMovies, ::handleUpcomingMovieList)
         observeLiveData(activityViewModel.popularMovies, ::handlePopularMovieList)
         observeLiveData(activityViewModel.topRateMovies, ::handleTopRateMovieList)
-
+        observeLiveData(activityViewModel.localUpComingMovies, ::showLocalUpcoming)
+        observeLiveData(activityViewModel.localPopularMovies, ::showLocalPopular)
+        observeLiveData(activityViewModel.localTopRateMovies, ::showLocalTopRate)
     }
 
     override fun initViewBinding() {
@@ -51,57 +58,69 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityViewModel.getUpcomingMovies()
-        activityViewModel.fetchPopularMovies("", 1)
-        activityViewModel.fetchTopRateMovies("", 1);
-        hideLayout()
-
+        val networkConnection = NetworkConnection(applicationContext)
+        networkConnection.observe(this) { isConnected ->
+            networkState = isConnected
+            if (isConnected) {
+                if (savedInstanceState == null) {
+                    activityViewModel.getUpcomingMovies()
+                    activityViewModel.fetchPopularMovies("", 1)
+                    activityViewModel.fetchTopRateMovies("", 1)
+                }
+                //Toast.makeText(this, "Internet Connected!", Toast.LENGTH_LONG).show()
+            } else {
+                if (savedInstanceState == null) {
+                    activityViewModel.getLocalMovie(upComingType)
+                    activityViewModel.getLocalMovie(popularType)
+                    activityViewModel.getLocalMovie(topRateType)
+                }
+                //Toast.makeText(this, "Internet Not Connected", Toast.LENGTH_LONG).show()
+            }
+        }
         activityBinding.popularMovieSeeAllMovieFrag.setOnClickListener {
-            val intent = Intent(this, SeeAllMovieActivity::class.java)
-            intent.putExtra("ComeFrom", "PopularMovies")
-            startActivity(intent)
+            if (networkState) {
+                val intent = Intent(this, SeeAllMovieActivity::class.java)
+                intent.putExtra("ComeFrom", "PopularMovies")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.internet_warning_message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         activityBinding.topRatedMovieSeeAllMovieFrag.setOnClickListener {
-            val intent = Intent(this, SeeAllMovieActivity::class.java)
-            intent.putExtra("ComeFrom", "TopRatedMovies")
-            startActivity(intent)
+            if (networkState) {
+                val intent = Intent(this, SeeAllMovieActivity::class.java)
+                intent.putExtra("ComeFrom", "TopRatedMovies")
+                startActivity(intent)
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.internet_warning_message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-        showLayout()
     }
 
-    private fun hideLayout() {
-
-        image_slider_movie.visibility = View.GONE
-        activityBinding.popularMovieLayoutMovieFrag.visibility = View.GONE
-        activityBinding.topRatedMovieLayoutMovieFrag.visibility = View.GONE
-        activityBinding.spinKitMovieFrag.visibility = View.VISIBLE
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
     }
 
-    private fun showLayout() {
-        activityBinding.spinKitMovieFrag.visibility = View.GONE
-        image_slider_movie.visibility = View.VISIBLE
-        activityBinding.popularMovieLayoutMovieFrag.visibility = View.VISIBLE
-        activityBinding.topRatedMovieLayoutMovieFrag.visibility = View.VISIBLE
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
     }
 
     private fun handleUpcomingMovieList(movieList: Resource<Movie>) {
         when (movieList) {
             is Resource.Loading -> loadingDialog.show()
-            is Resource.Success -> movieList.data?.let { list ->
+            is Resource.Success -> movieList.data?.let {
                 loadingDialog.dismiss()
-                movieSliderAdapter = MovieSliderAdapter(this, list.results)
-                image_slider_movie.setSliderAdapter(movieSliderAdapter)
-                image_slider_movie.setIndicatorAnimation(IndicatorAnimationType.WORM)
-                image_slider_movie.setSliderTransformAnimation(SliderAnimations.DEPTHTRANSFORMATION)
-                image_slider_movie.startAutoCycle()
-                movieSliderAdapter.onItemClick = { movieId ->
-                    val bundle = Bundle()
-                    bundle.putString("MovieIdPass", movieId)
-                    val fragment = DetailFragment()
-                    fragment.arguments = bundle
-                    transactionFragment(fragment)
-                }
+                activityViewModel.cacheMovies(upComingType, it.results)
+                slideAdapterSetup(it.results)
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
@@ -115,22 +134,8 @@ class MainActivity : BaseActivity() {
             is Resource.Loading -> loadingDialog.show()
             is Resource.Success -> movieList.data?.let {
                 loadingDialog.dismiss()
-                popularMovieAdapter = PopularMovieAdapter(this, it.results)
-                activityBinding.popularMovieRecViewMoviesFragment.apply {
-                    adapter = popularMovieAdapter
-                    layoutManager = LinearLayoutManager(
-                        context,
-                        LinearLayoutManager.HORIZONTAL, false
-                    )
-                    setHasFixedSize(false)
-                }
-                popularMovieAdapter.onItemClick = { movieId ->
-                    val bundle = Bundle()
-                    bundle.putString("MovieIdPass", movieId)
-                    val fragment = DetailFragment()
-                    fragment.arguments = bundle
-                    transactionFragment(fragment)
-                }
+                activityViewModel.cacheMovies(popularType, it.results)
+                popularAdapterSetup(it.results)
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
@@ -144,28 +149,101 @@ class MainActivity : BaseActivity() {
             is Resource.Loading -> loadingDialog.show()
             is Resource.Success -> movieList.data?.let {
                 loadingDialog.dismiss()
-                topRatedMovieAdapter = PopularMovieAdapter(this, it.results)
-                activityBinding.topRatedMovieRecViewMoviesFragment.apply {
-                    adapter = topRatedMovieAdapter
-                    layoutManager = LinearLayoutManager(
-                        context,
-                        LinearLayoutManager.HORIZONTAL, false
-                    )
-                    setHasFixedSize(false)
-                }
-                topRatedMovieAdapter.onItemClick = { movieId ->
-                    val bundle = Bundle()
-                    bundle.putString("MovieIdPass", movieId)
-                    val fragment = DetailFragment()
-                    fragment.arguments = bundle
-                    transactionFragment(fragment)
-                }
+                activityViewModel.cacheMovies(topRateType, it.results)
+                topRateAdapterSetup(it.results)
             }
             is Resource.DataError -> {
                 loadingDialog.dismiss()
                 movieList.errorMessage?.let { responseDialog.showErrorDialog(it) }
             }
         }
+    }
+
+    private fun slideAdapterSetup(result: List<Result>) {
+        movieSliderAdapter = MovieSliderAdapter(this, result)
+        image_slider_movie.setSliderAdapter(movieSliderAdapter)
+        image_slider_movie.setIndicatorAnimation(IndicatorAnimationType.WORM)
+        image_slider_movie.setSliderTransformAnimation(SliderAnimations.DEPTHTRANSFORMATION)
+        image_slider_movie.startAutoCycle()
+        movieSliderAdapter.onItemClick = { movieId ->
+            if (networkState) {
+                val bundle = Bundle()
+                bundle.putString("MovieIdPass", movieId)
+                val fragment = DetailFragment()
+                fragment.arguments = bundle
+                transactionFragment(fragment)
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.internet_warning_message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun popularAdapterSetup(results: List<Result>) {
+        popularMovieAdapter = PopularMovieAdapter(this, results)
+        activityBinding.popularMovieRecViewMoviesFragment.apply {
+            adapter = popularMovieAdapter
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL, false
+            )
+            setHasFixedSize(false)
+        }
+        popularMovieAdapter.onItemClick = { movieId ->
+            if (networkState) {
+                val bundle = Bundle()
+                bundle.putString("MovieIdPass", movieId)
+                val fragment = DetailFragment()
+                fragment.arguments = bundle
+                transactionFragment(fragment)
+            } else {
+                Toast.makeText(
+                    this,
+                    R.string.internet_warning_message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun topRateAdapterSetup(results: List<Result>) {
+        topRatedMovieAdapter = PopularMovieAdapter(this, results)
+        activityBinding.topRatedMovieRecViewMoviesFragment.apply {
+            adapter = topRatedMovieAdapter
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL, false
+            )
+            setHasFixedSize(false)
+        }
+
+        topRatedMovieAdapter.onItemClick = { movieId ->
+            if (networkState) {
+                val bundle = Bundle()
+                bundle.putString("MovieIdPass", movieId)
+                val fragment = DetailFragment()
+                fragment.arguments = bundle
+                transactionFragment(fragment)
+            } else {
+                Toast.makeText(this, R.string.internet_warning_message, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    private fun showLocalUpcoming(movies: List<Result>) {
+        slideAdapterSetup(movies)
+    }
+
+    private fun showLocalPopular(movies: List<Result>) {
+        popularAdapterSetup(movies)
+    }
+
+    private fun showLocalTopRate(movies: List<Result>) {
+        topRateAdapterSetup(movies)
     }
 
     private fun transactionFragment(fragment: Fragment) {

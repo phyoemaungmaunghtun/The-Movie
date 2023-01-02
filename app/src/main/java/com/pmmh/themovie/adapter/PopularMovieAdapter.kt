@@ -31,6 +31,7 @@ class PopularMovieAdapter(val ctx: Context, val movies: List<Result>) :
             .with(ctx)
             .load(Utils.posterUrlMake(movie.posterPath))
             .into(viewHolder.poster)
+            .onLoadFailed(ctx.getDrawable(R.drawable.thumbnail))
 
         viewHolder.itemView.setOnClickListener {
             val movieId:String = movie.id.toString()
